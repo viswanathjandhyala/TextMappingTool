@@ -451,5 +451,6 @@ public class MappingDAO {
 	public static void main(String args[]) {
 		System.out.println(getScreenDataFrmTable("Dashboard_Panel_Master.json", "Panel", "Dashboard"));
 		System.out.println(getShortKey("FRONT"));
+		System.out.println("Added Print in Main Method of DAO");
 	}
 }
