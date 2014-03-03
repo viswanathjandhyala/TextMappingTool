@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<script src="js/jquery-1.9.1.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$.getJSON("/GMTextMapping/rest/mappingservice/newjson",
+			function (data){
+		 var textMapping = "<table class=mapper>";
+		textMapping = textMapping+"<tr class=header class=odd>";
+		textMapping = textMapping+"<th>Layer Name</th>";
+		textMapping = textMapping+"<th>Field Max Width</th>";
+		textMapping = textMapping+"<th>Translation Max Width</th>";
+		textMapping = textMapping+"<th>Mapped</th>";
+		textMapping = textMapping+"</tr>";
+		var i = 1;
+		var j = 0;
+		$.each(data.Screen.LabelWidget, function(key, values) {
+			var trclass;
+			if(i%2==0)
+				trclass = "odd mappertrClick";
+			else
+				trclass = "even mappertrClick";
+			textMapping = textMapping+'<tr class="'+trclass+'">';
+			textMapping = textMapping+"<td class=layerName>" +
+			"<img class='sideImg imgMapper' src=images/sidearrow.png rownum=" + i + ">"+data.Screen.LabelWidget[j].Value.Text+"</td>" 
+			+"<td class=fieldMWidth>"+data.Screen.LabelWidget[j].Size.SizeW+'px'+"</td>"
+			+"<td class=trnsMWidth></td>"
+			+"<td class=imageMapped></td>"
+			+"<td class=pname style='display: none'></td>"
+			+"<td class=mappedStage style='display: none'></td>";
+			textMapping = textMapping+"</tr>";
+
+			/* row for font information; by default it is hidden */ 
+			textMapping = textMapping + "<tr class='details" + i + "' style='display:none;'><td class=fontname>"+data.Screen.LabelWidget[j].Font.Name+"</td>"
+			+"<td class=fontsize>"+data.Screen.LabelWidget[j].Font.Size+"</td>"
+			+"<td class=fonttype>"+data.Screen.LabelWidget[j].Font.Decoration+"</td></tr>";
+			i++;j++;
+		});
+		textMapping = textMapping+"</table>";
+		$(".labelstab").append(textMapping); 
+	});
+});
+</script>
+</head>
+<body>
+	<div class="labelstab"></div>
+</body>
+</html>
