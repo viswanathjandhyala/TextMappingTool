@@ -117,8 +117,7 @@ $(document).ready(function() {
 
 
 	/**
-	 *  This will highlight the row selected in the dynamic variables tab, 
-	 *  the selected value will get populated in search term in the variables tab
+	 *  This will highlight the row selected in the dynamic variables tab, the selected value will get populated in search term in the variables tab
 	 */
 
 	$('.dynamicmappertrClick').click(function(){
@@ -215,7 +214,7 @@ $(document).ready(function() {
 	});
 
 	$(".newRequestq").click(function() {
-		$('.body').css('display','block');
+		$('.dialogbody').css('display','block');
 		valueOf($('.wrdSearch').val());
 		$("#dialog-form").dialog("open");
 	});
@@ -315,7 +314,7 @@ $(document).ready(function() {
 			if(count == lblsLength){
 				saveMappedData(jsonString);
 			}else{
-				var r=confirm("You have not mapped all the values, do you want to save?");
+				var r=confirm("You have not mapped all the terms, do you want to save the mapping anyways?");
 				if(r==true){
 					saveMappedData(jsonString);
 				}
@@ -332,63 +331,110 @@ $(document).ready(function() {
 	var fontFamily = '';
 	var fontSize = '';
 	var fontStyle = '';
+	var textString = '';
+	
 	$('.mapTermButton').click(function(e){
+		/* save the screen details in the DB */
 		addScreenDetails(fileName, screenName, projectName);
+		
+		/* get values from Photoshop Screen section*/
 		layerName = $('.highlight').find('.layerName').text();
 		fieldWidth = $('.highlight').find('.fieldMWidth').text();
 		fontFamily = $('.highlight').find('.fontname').text();
 		fontSize = $('.highlight').find('.fontsize').text();
 		fontStyle = $('.highlight').find('.fonttype').text();
+		
+		/* get the text from English Master section */
+		textString = $('.highlightdiv').find('.textString').text();
+		
+		/* check if any value is selected in English Master section else throw an alert */
+		if (textString == '' || textString == undefined) {
+			alert('Please select a term from English Master and continue mapping activity.');
+			/*$('#errorMsgDlgDiv').html('Please select a term from English Master and continue mapping activity.');
+			$('#errorMsgDlgDiv').dialog();*/
+		} else {	/* if a value is selected proceed with other logic */
+			var i=0;
+			if(!textString == ''){
+				$.getJSON("/GMTextMapping/rest/mappingservice/shortkey/"+textString, function(data){
+					$.each(data.id, function(key, values) {
+						shortkey = values.shortkey;
+					});
+					if (layerName != textString) {	/* check if values in PS and EM are not same */
+						var proceed = confirm("The selected Layer Name and Text String do not match (case sensitive also), do you want to map this term?");
+						if (proceed) {
+							$.each(lbldata.Screen.LabelWidget, function(key, values) {
+								if (lbldata.Screen.LabelWidget[i].Value.Text == layerName) {
+									lbldata.Screen.LabelWidget[i].shortkey = shortkey;
+								}
+								i++;
+							});
+							trnsMWidth =  $('.highlight').find('.trnsMWidth').text();
+							fieldMWidth =  $('.highlight').find('.fieldMWidth').text();
+							if(!trnsMWidth == ''){
+								trnsMWidth = parseInt(trnsMWidth.replace('px',''));
+								fieldMWidth = parseInt(fieldMWidth.replace('px',''));
+								if(trnsMWidth > fieldMWidth){
+									$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/cross.png" />');
+									$('.highlight').find('.trnsMWidth').css('color','red');
+									$('.highlight').find('.trnsMWidth').css('font-weight','bold');
+									alert('This field width cannot accomodate the translation max width, you might have to change the field width or font size. Choose wisely!');
+									$('.saveMapping').removeAttr('disabled');
+								}else{
+									$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/tick.png" />');
+									$('.highlight').find('.mappertrClick').addClass('tick');
+									$('.highlight').find('.trnsMWidth').css('font-weight','');
+									$('.saveMapping').removeAttr('disabled');
+								}
 
-		var i=0;
-		if(!layerName == ''){
-			$.getJSON("/GMTextMapping/rest/mappingservice/shortkey/"+layerName, function(data){
-				$.each(data.id, function(key, values) {
-					shortkey = values.shortkey;
-				});
-				$.each(lbldata.Screen.LabelWidget, function(key, values) {
-					if(lbldata.Screen.LabelWidget[i].Value.Text == layerName){
-						lbldata.Screen.LabelWidget[i].shortkey = shortkey;
+							}
+						} else {
+							//do nothing
+						}
+					} else {
+						$.each(lbldata.Screen.LabelWidget, function(key, values) {
+							if (lbldata.Screen.LabelWidget[i].Value.Text == layerName) {
+								lbldata.Screen.LabelWidget[i].shortkey = shortkey;
+							}
+							i++;
+						});
+						trnsMWidth =  $('.highlight').find('.trnsMWidth').text();
+						fieldMWidth =  $('.highlight').find('.fieldMWidth').text();
+						if(!trnsMWidth == ''){
+							trnsMWidth = parseInt(trnsMWidth.replace('px',''));
+							fieldMWidth = parseInt(fieldMWidth.replace('px',''));
+							if(trnsMWidth > fieldMWidth){
+								$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/cross.png" />');
+								$('.highlight').find('.trnsMWidth').css('color','red');
+								$('.highlight').find('.trnsMWidth').css('font-weight','bold');
+								alert('This field width cannot accomodate the translation max width, you might have to change the field width or font size. Choose wisely!');
+								$('.saveMapping').removeAttr('disabled');
+							}else{
+								$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/tick.png" />');
+								$('.highlight').find('.mappertrClick').addClass('tick');
+								$('.highlight').find('.trnsMWidth').css('font-weight','');
+								$('.saveMapping').removeAttr('disabled');
+							}
+
+						}
 					}
-					i++;
+					
+					item = {};
+					item['layerName'] = layerName;
+					item['fieldWidth'] = fieldWidth;
+					item['fontFamily'] = fontFamily;
+					item['fontSize'] = fontSize;
+					item['fontStyle'] = fontStyle;
+					item['shortkey'] = shortkey;
+					item['fileName'] = fileName;
+					item['screenName'] = screenName;
+					item['projectName'] = projectName;
+					jsonObj.push(item);
 				});
-				item = {};
-				item['layerName'] = layerName;
-				item['fieldWidth'] = fieldWidth;
-				item['fontFamily'] = fontFamily;
-				item['fontSize'] = fontSize;
-				item['fontStyle'] = fontStyle;
-				item['shortkey'] = shortkey;
-				item['fileName'] = fileName;
-				item['screenName'] = screenName;
-				item['projectName'] = projectName;
-				jsonObj.push(item);
-			});
+			}
 		}
 
 		count++;
 		$('.savemappedData').empty();
-		trnsMWidth =  $('.highlight').find('.trnsMWidth').text();
-		fieldMWidth =  $('.highlight').find('.fieldMWidth').text();
-		if(!trnsMWidth == ''){
-			trnsMWidth = parseInt(trnsMWidth.replace('px',''));
-			fieldMWidth = parseInt(fieldMWidth.replace('px',''));
-			if(trnsMWidth > fieldMWidth){
-				$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/cross.png" />');
-				$('.highlight').find('.trnsMWidth').css('color','red');
-				$('.highlight').find('.trnsMWidth').css('font-weight','bold');
-				alert('This field width cannot accomodate the translation max width, you might have to change the field width or font size. Choose wisely!');
-				$('.saveMapping').removeAttr('disabled');
-			}else{
-				$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/tick.png" />');
-				$('.highlight').find('.mappertrClick').addClass('tick');
-				$('.highlight').find('.trnsMWidth').css('font-weight','');
-				$('.saveMapping').removeAttr('disabled');
-			}
-
-		}else{
-			alert("Select value from English Master");
-		}
 	});
 
 	function searchTerm(){
@@ -415,7 +461,7 @@ $(document).ready(function() {
 							trclass = "even mapEngTermtrClick";
 						englishMaster = englishMaster+'<tr class="'+trclass+'">';
 						englishMaster = englishMaster+"<td class=propertyname style='display: none'>"+values.propertyname+"</td>"
-						+"<td style='padding-left: 10px;'>"+values.textstring+"</td>"
+						+"<td class='textString' style='padding-left: 10px;'>"+values.textstring+"</td>"
 						+"<td class='MaxPixelWidth' style='width: 20%; padding-left: 10px;'>"+values.maxpixelwidth+'px'+"</td>";
 						englishMaster = englishMaster+"</tr>";
 						i++;
