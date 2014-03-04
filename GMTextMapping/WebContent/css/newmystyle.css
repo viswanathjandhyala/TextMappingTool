@@ -21,16 +21,15 @@
 	font-weight: bold;
 }
 
-body {
-	font-size: 62.5%;
-}
-
 label,input {
 	display: block;
 }
 
-.pixelWidthText,.fontStyle,.fontSize,.trnsInstrct,.termDesc
-	{
+.dynamiclayerName{
+	border-right: thin solid #A0A0A0;
+}
+
+.pixelWidthText,.fontStyle,.fontSize,.trnsInstrct,.termDesc {
 	margin-bottom: 12px;
 	width: 95%;
 	padding: .4em;
@@ -42,7 +41,8 @@ label,input {
 	width: 95%;
 	padding: .4em;
 	color: #CC0033;
-	box-shadow: 4px 5px 2px -3px rgba(0, 0, 0, 0.5); /* get the shadow effect */
+	box-shadow: 4px 5px 2px -3px rgba(0, 0, 0, 0.5);
+	/* get the shadow effect */
 }
 
 .fieldset {
@@ -65,7 +65,7 @@ h1 {
 	padding: 0.3em;
 }
 
-.layerMapheader,.engMasterheader, .variableMaster {
+.layerMapheader,.engMasterheader,.variableMasterHeader {
 	width: 50%;
 	background-color: #E8E8E8;
 	float: left;
@@ -77,12 +77,17 @@ h1 {
 	width: 100%;
 }
 
-.ui-tabs .ui-tabs-nav li.ui-tabs-active a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-tabs-loading a, 
-.ui-tabs .ui-tabs-nav li a, .ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-active a {
+.ui-tabs .ui-tabs-nav li.ui-tabs-active a,.ui-tabs .ui-tabs-nav li.ui-state-disabled a,.ui-tabs .ui-tabs-nav li.ui-tabs-loading a,.ui-tabs .ui-tabs-nav li a,.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-active a
+	{
 	font-size: smaller;
 }
 
-.wrdSearch {
+#labelsSrchBtnId, #dynamicSrchBtnId {
+	width: 70px;
+	height: 27px;
+}
+
+.wrdSearch,.dynamicWrdSearch {
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
@@ -170,6 +175,6 @@ td {
 	border-bottom: thin solid #A0A0A0;
 }
 
-.header > th {
-	text-align: center;
+.header>th {
+	text-align: left;
 }
