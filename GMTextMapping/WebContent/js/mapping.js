@@ -117,7 +117,8 @@ $(document).ready(function() {
 
 
 	/**
-	 *  This will highlight the row selected in the dynamic variables tab, the selected value will get populated in search term in the variables tab
+	 *  This will highlight the row selected in the dynamic variables tab, 
+	 *  the selected value will get populated in search term in the variables tab
 	 */
 
 	$('.dynamicmappertrClick').click(function(){
@@ -265,7 +266,7 @@ $(document).ready(function() {
 			$.each(data.inserted, function(key, values) {
 				if(values.addedfile == true){
 					$('.addedScreenDetails').empty();
-					$('.addedScreenDetails').append("<h3 style='color: green; font-size: large;'>"+fileName+" Details Added</h3>");
+					/*$('.addedScreenDetails').append("<h3 style='color: green; font-size: large;'>"+fileName+" Details Added</h3>");*/
 					success = true;
 				}
 			});
@@ -382,7 +383,7 @@ $(document).ready(function() {
 				$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/tick.png" />');
 				$('.highlight').find('.mappertrClick').addClass('tick');
 				$('.highlight').find('.trnsMWidth').css('font-weight','');
-				/*$('.saveMapping').removeAttr('disabled');*/
+				$('.saveMapping').removeAttr('disabled');
 			}
 
 		}else{

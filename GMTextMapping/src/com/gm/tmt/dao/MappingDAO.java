@@ -32,8 +32,8 @@ public class MappingDAO {
 	static ResultSet rs = null;
 	static List<MappingBean> mappingBeanList = null;
 	static Map<String, MappingBean> mapBean = null;
-	static int id;
-	static int fid;
+	static int master_id;
+	static int shortkey;
 
 	public static void getProperty(){
 
@@ -66,11 +66,11 @@ public class MappingDAO {
 	public static void getId(){
 		try{
 			conn = getConnection();
-			pst = conn.prepareStatement("select max(id) as id,max(fid) as fid from terms");
+			pst = conn.prepareStatement("select max(master_id) as master_id, max(shortkey) as shortkey from terms");
 			rs = pst.executeQuery();
 			while(rs.next()){
-				id = rs.getInt("id");
-				fid = rs.getInt("fid");
+				master_id = rs.getInt("master_id");
+				shortkey = rs.getInt("shortkey");
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -164,15 +164,15 @@ public class MappingDAO {
 	public static boolean addNewTerm(String textString,
 			String termDescription){
 
-		getId();
+		getId();	/* get max val of master_id and shortkey from terms table */
 		boolean inserted = false;
 		try{
 			conn = getConnection();
-			pst = conn.prepareStatement("insert into terms values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-			pst.setInt(1, ++id);
-			pst.setInt(2, ++fid);
-			pst.setString(3, "");
-			pst.setString(4, textString);
+			pst = conn.prepareStatement("insert into terms values(?,?,?,?,?,?,?,?,?,?,?)");
+			pst.setInt(1, ++master_id);
+			pst.setInt(2, 000000);		/* shortkey has to be 0 for new terms; indicating it is a new term */
+			pst.setString(3, textString);
+			pst.setString(4, termDescription);
 			pst.setString(5, "");
 			pst.setString(6, "");
 			pst.setString(7, "");
@@ -180,11 +180,6 @@ public class MappingDAO {
 			pst.setString(9, "");
 			pst.setString(10, "");
 			pst.setString(11, "");
-			pst.setString(12, termDescription);
-			pst.setString(13, "");
-			pst.setString(14, "");
-			pst.setInt(15, 0);
-			pst.setString(16, "Y");
 			int i = pst.executeUpdate();
 			if(i==1){
 				inserted = true;

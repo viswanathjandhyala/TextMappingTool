@@ -66,10 +66,12 @@
 					</div>
 			</div>
 			<div class="englishMaster" style="float: left; width: 100%;"></div>
+			<div  style="float:left; margin-left: 22em;">
+				<input type="button" class="newRequestq btn btn-primary" style="margin-top: 20px;"
+					value="New Request" />
+			</div>
 		</div>
 		<div class="button">
-			<input type="button" class="newRequestq btn btn-primary" style="margin-top: 20px;"
-				value="New Request" />
 		</div>
 	</div>
 	
@@ -88,7 +90,7 @@
 			<div class="englishMaster" style="float: left; width: 100%;"></div>
 		</div>
 		<div class="button">
-			<input type="button" class="newRequestq btn btn-primary" style="margin-top: 20px;"
+			<input type="button" class="newRequestDynVar btn btn-primary" style="margin-top: 20px;"
 				value="New Request" />
 		</div>
 	</div>
@@ -96,7 +98,7 @@
 	<div class="addedScreenDetails"></div>
 	<div class="addedScreenLayers"></div>
 
-	<div id="dialog-form" class="body" style="display: none;"
+	<div id="dialog-form" class="dialogbody" style="display: none;"
 		title="New Term Request">
 		<p class="validateTips">All form fields are required.</p>
 
@@ -111,5 +113,6 @@
 			</fieldset>
 		</form>
 	</div>
+	<div id="errorMsgDlgDiv"></div>
 </body>
 </html>
