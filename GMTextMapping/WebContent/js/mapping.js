@@ -6,8 +6,9 @@ $(document).ready(function() {
 	jsonObj = [];
 	var jsonData = $('.textareajson').val();
 	dataFromFile = JSON.parse(jsonData);
-	$('.saveMapping').attr('disabled','disabled');
-	$('.newRequestq').attr('disabled','disabled');
+	$('#saveMapping').attr('disabled','disabled');
+	$('#newRequestLabels').attr('disabled','disabled');
+	$('#newRequestDynVar').attr('disabled','disabled');
 	$('.wrdSearch').val('');
 	$('#tabs').tabs();
 	var lblsLength = '';
@@ -71,7 +72,7 @@ $(document).ready(function() {
 	var k = 0;
 	var dynamicVariables = "<table class=mapper>";
 	dynamicVariables = dynamicVariables+"<tr class=header class=odd>";
-	dynamicVariables = dynamicVariables+"<th>Layer Name</th>";
+	dynamicVariables = dynamicVariables+"<th style='border-right: thin solid #A0A0A0;'>Layer Name</th>";
 	dynamicVariables = dynamicVariables+"<th>Mapped</th>";
 	dynamicVariables = dynamicVariables+"</tr>";
 	$.each(dataFromFile.Screen.LabelWidget, function(key, values) {
@@ -97,20 +98,21 @@ $(document).ready(function() {
 	 * This click is for displaying the variables div on click of dynamic variables tab
 	 */
 
-	$('.dynamic').click(function(){
+	$('#dynamic').click(function(){
 		$('.wrdSearch').val('');
 		$('.engMasterheader').css('display','none');
-		$('.variableMaster').css('display','block');
+		$('.variableMasterHeader').css('display','block');
+		$('.englishMaster').empty();
 	});
 
 	/**
 	 * This click is for displaying the English master div on click of labels tab
 	 */
 
-	$('.labels').click(function(){
+	$('#labels').click(function(){
 		$('.dynamicWrdSearch').val('');
 		$('.engMasterheader').css('display','block');
-		$('.variableMaster').css('display','none');
+		$('.variableMasterHeader').css('display','none');
 	});
 
 	/*The above two click functions will hide or show the div based on the tab selected*/
@@ -213,7 +215,7 @@ $(document).ready(function() {
 		});
 	});
 
-	$(".newRequestq").click(function() {
+	$("#newRequestLabels").click(function() {
 		$('.dialogbody').css('display','block');
 		valueOf($('.wrdSearch').val());
 		$("#dialog-form").dialog("open");
@@ -240,7 +242,7 @@ $(document).ready(function() {
 		event.stopPropagation();
 	});
 
-	$("#srchBtnId").click(function() {
+	$("#labelsSrchBtnId").click(function() {
 		if($(".wrdSearch").val()==""){
 			searchTerm();
 		}else if($(".wrdSearch").val()!=""){
@@ -305,7 +307,7 @@ $(document).ready(function() {
 	/* 
 	 * saves the mapping and lets the user download a JSON file 
 	 */
-	$('.saveMapping').click(function(){
+	$('#saveMapping').click(function(){
 		jsonString = JSON.stringify(lbldata);
 		var screenLayers = addScreenLayers(fileName, screenName, projectName, jsonObj);
 		console.log(screenLayers);
@@ -320,9 +322,9 @@ $(document).ready(function() {
 				}
 			}
 		}
-		$('.mapTermButton').hide();
-		$('.saveMapping').hide();
-		$('.newMapping').show();
+		$('#mapTermButton').hide();
+		$('#saveMapping').hide();
+		$('#newMapping').show();
 	});
 	var count = 0;
 	var shortkey = '';
@@ -333,7 +335,7 @@ $(document).ready(function() {
 	var fontStyle = '';
 	var textString = '';
 	
-	$('.mapTermButton').click(function(e){
+	$('#mapTermButton').click(function(e){
 		/* save the screen details in the DB */
 		addScreenDetails(fileName, screenName, projectName);
 		
@@ -378,12 +380,12 @@ $(document).ready(function() {
 									$('.highlight').find('.trnsMWidth').css('color','red');
 									$('.highlight').find('.trnsMWidth').css('font-weight','bold');
 									alert('This field width cannot accomodate the translation max width, you might have to change the field width or font size. Choose wisely!');
-									$('.saveMapping').removeAttr('disabled');
+									$('#saveMapping').removeAttr('disabled');
 								}else{
 									$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/tick.png" />');
 									$('.highlight').find('.mappertrClick').addClass('tick');
 									$('.highlight').find('.trnsMWidth').css('font-weight','');
-									$('.saveMapping').removeAttr('disabled');
+									$('#saveMapping').removeAttr('disabled');
 								}
 
 							}
@@ -407,12 +409,12 @@ $(document).ready(function() {
 								$('.highlight').find('.trnsMWidth').css('color','red');
 								$('.highlight').find('.trnsMWidth').css('font-weight','bold');
 								alert('This field width cannot accomodate the translation max width, you might have to change the field width or font size. Choose wisely!');
-								$('.saveMapping').removeAttr('disabled');
+								$('#saveMapping').removeAttr('disabled');
 							}else{
 								$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/tick.png" />');
 								$('.highlight').find('.mappertrClick').addClass('tick');
 								$('.highlight').find('.trnsMWidth').css('font-weight','');
-								$('.saveMapping').removeAttr('disabled');
+								$('#saveMapping').removeAttr('disabled');
 							}
 
 						}
@@ -444,9 +446,9 @@ $(document).ready(function() {
 			$.getJSON("/GMTextMapping/rest/mappingservice/searchdata/"+wrdSearch, function(data){
 				if(data.results.length == 0){
 					$(".englishMaster").append("<h1 style='color: red; font-size: x-large;text-align: center;'>No Data Found</h1>");
-					$('.newRequestq').removeAttr('disabled');
+					$('#newRequestLabels').removeAttr('disabled');
 				}else{
-					$('.newRequestq').attr('disabled','disabled');
+					$('#newRequestLabels').attr('disabled','disabled');
 					var englishMaster = "<table class=mapEngTerm>";
 					englishMaster = englishMaster+"<tr class=header class=odd>";
 					englishMaster = englishMaster+"<th>Text String</th>";
@@ -486,7 +488,7 @@ $(document).ready(function() {
 		}
 	}
 
-	$('.newMapping').click(function(){
+	$('#newMapping').click(function(){
 		window.location.replace('/GMTextMapping/');
 	});
 });
