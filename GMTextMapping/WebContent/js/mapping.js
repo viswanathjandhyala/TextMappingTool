@@ -102,6 +102,8 @@ $(document).ready(function() {
 		$('.wrdSearch').val('');
 		$('.engMasterheader').css('display','none');
 		$('.variableMasterHeader').css('display','block');
+		$('.dynamicbutton').css('display','block');
+		$('.labelsbutton').css('display','none');
 		$('.englishMaster').empty();
 	});
 
@@ -113,19 +115,30 @@ $(document).ready(function() {
 		$('.dynamicWrdSearch').val('');
 		$('.engMasterheader').css('display','block');
 		$('.variableMasterHeader').css('display','none');
+		$('.labelsbutton').css('display','block');
+		$('.dynamicbutton').css('display','none');
 	});
 
 	/*The above two click functions will hide or show the div based on the tab selected*/
-
+	
+	var dynamicLayerName = '';
+	$('#dynamicMapButton').click(function(){
+		dynamicLayerName = $('.dynamichighlight').find('.dynamiclayerName').text();
+		if(dynamicLayerName == ''){
+			alert('Please select a Layer Name from Dynamic Variables and continue with mapping');
+		}else{
+			alert(dynamicLayerName);
+		}
+	});
 
 	/**
-	 *  This will highlight the row selected in the dynamic variables tab, the selected value will get populated in search term in the variables tab
+	 *  This will highlight the row selected in the dynamic variables tab, 
+	 *  the selected value will get populated in search term in the variables tab
 	 */
 
 	$('.dynamicmappertrClick').click(function(){
-		console.log('clciked');
-		$('.highlight').removeClass('highlight');
-		$(this).addClass('highlight');
+		$('.dynamichighlight').removeClass('dynamichighlight');
+		$(this).addClass('dynamichighlight');
 		var valueSelected = $(this).find(".dynamiclayerName").text();
 		$('.dynamicWrdSearch').val(valueSelected);
 		$('.englishMaster').empty();
@@ -282,7 +295,8 @@ $(document).ready(function() {
 	function addScreenLayers(fileName, screenName, projectName, jsonObj){
 		mappedData = JSON.stringify(jsonObj);
 		var success = false;
-		$.post("/GMTextMapping/rest/mappingservice/mappeddata?mappedData="+mappedData+"&fileName="+fileName+"&screenName="+screenName+"&projectName="+projectName)
+		$.post("/GMTextMapping/rest/mappingservice/mappeddata?mappedData="+mappedData+"&fileName="+fileName+"&screenName="
+				+screenName+"&projectName="+projectName)
 		.done(function(data) {
 			$.each(data.insert, function(key, values) {
 				if(values.inserted == true){
@@ -349,8 +363,12 @@ $(document).ready(function() {
 		/* get the text from English Master section */
 		textString = $('.highlightdiv').find('.textString').text();
 		
+		/* Checking the layer name is seleted or not */
+		if(layerName == ''){
+			alert('Please select a layer Name from Photoshop screen and continue mapping activity.');
+		}
 		/* check if any value is selected in English Master section else throw an alert */
-		if (textString == '' || textString == undefined) {
+		else if (textString == '' || textString == undefined) {
 			alert('Please select a term from English Master and continue mapping activity.');
 			/*$('#errorMsgDlgDiv').html('Please select a term from English Master and continue mapping activity.');
 			$('#errorMsgDlgDiv').dialog();*/
@@ -362,7 +380,8 @@ $(document).ready(function() {
 						shortkey = values.shortkey;
 					});
 					if (layerName != textString) {	/* check if values in PS and EM are not same */
-						var proceed = confirm("The selected Layer Name and Text String do not match (case sensitive also), do you want to map this term?");
+						var proceed = confirm("The selected Layer Name and Text String do not match (case sensitive also), " +
+								"do you want to map this term?");
 						if (proceed) {
 							$.each(lbldata.Screen.LabelWidget, function(key, values) {
 								if (lbldata.Screen.LabelWidget[i].Value.Text == layerName) {
@@ -379,7 +398,8 @@ $(document).ready(function() {
 									$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/cross.png" />');
 									$('.highlight').find('.trnsMWidth').css('color','red');
 									$('.highlight').find('.trnsMWidth').css('font-weight','bold');
-									alert('This field width cannot accomodate the translation max width, you might have to change the field width or font size. Choose wisely!');
+									alert('This field width cannot accomodate the translation max width, you might have to change'+ 
+											'the field width or font size. Choose wisely!');
 									$('#saveMapping').removeAttr('disabled');
 								}else{
 									$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/tick.png" />');
@@ -392,7 +412,7 @@ $(document).ready(function() {
 						} else {
 							//do nothing
 						}
-					} else {
+					} /*else {
 						$.each(lbldata.Screen.LabelWidget, function(key, values) {
 							if (lbldata.Screen.LabelWidget[i].Value.Text == layerName) {
 								lbldata.Screen.LabelWidget[i].shortkey = shortkey;
@@ -418,7 +438,7 @@ $(document).ready(function() {
 							}
 
 						}
-					}
+					}*/
 					
 					item = {};
 					item['layerName'] = layerName;

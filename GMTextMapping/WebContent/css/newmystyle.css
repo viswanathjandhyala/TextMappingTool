@@ -137,17 +137,21 @@ h1 {
 	font-family: Calibri;
 }
 
-.highlight {
+.highlight, .dynamichighlight, .highlightdiv {
 	background-color: blue;
 	color: white;
 }
 
-.highlightdiv {
+/* .highlightdiv {
 	background-color: blue;
 	color: white;
+} */
+
+.button{
+	float: left;
 }
 
-.button {
+.labelsbutton, .dynamicbutton {
 	float: right;
 }
 
