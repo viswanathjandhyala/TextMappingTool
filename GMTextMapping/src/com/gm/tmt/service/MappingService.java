@@ -134,16 +134,18 @@ public class MappingService {
 	 */
 	@SuppressWarnings({ "unchecked"})
 	@POST
-	@Path("/addscreen/{fileName},{screenName},{projectName}")
+	@Path("/addscreen/{fileName},{screenName},{projectName},{modelyear},{domain}")
 	@Produces("application/json")
 	public String insertScreenDeatils(@PathParam("fileName") String fileName, 
 			@PathParam("screenName") String screenName,
-			@PathParam("projectName") String projectName){
+			@PathParam("projectName") String projectName,
+			@PathParam("modelyear") String modelYear,
+			@PathParam("domain") String domain){
 
 		JSONObject fileInsert = new JSONObject();
 		JSONObject fileInsertData = new JSONObject();
 		JSONArray fileInsertArray = new JSONArray();
-		boolean inserted = MappingController.insertScreenDetails(fileName, screenName, projectName);
+		boolean inserted = MappingController.insertScreenDetails(fileName, screenName, projectName, modelYear, domain);
 		fileInsert.put("addedfile", inserted);
 		fileInsertArray.add(fileInsert);
 		fileInsertData.put("inserted", fileInsertArray);

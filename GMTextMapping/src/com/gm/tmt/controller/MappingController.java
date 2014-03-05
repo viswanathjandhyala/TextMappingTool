@@ -32,7 +32,7 @@ public class MappingController {
 		return MappingDAO.getShortKey(term);
 	}
 	
-	public static boolean insertScreenDetails(String fileName, String screenName, String projectName){
-		return MappingDAO.insertScreenDetails(fileName, screenName, projectName);
+	public static boolean insertScreenDetails(String fileName, String screenName, String projectName, String modelYear, String domain){
+		return MappingDAO.insertScreenDetails(fileName, screenName, projectName, modelYear, domain);
 	}
 }

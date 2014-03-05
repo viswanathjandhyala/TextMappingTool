@@ -19,7 +19,8 @@
 
 <script src="js/jquery-1.9.1.js"></script>
 <script src="js/jquery-ui.js"></script>
-<script type="text/javascript" src="js/mapping.js"></script>
+<script type="text/javascript" src="js/labels.js"></script>
+<script type="text/javascript" src="js/dynamicvariables.js"></script>
 </head>
 <body>
 	<h3 align="center">GM Text Mapping Tool</h3>
@@ -189,74 +190,5 @@
 			</fieldset>
 		</form>
 	</div>
-	<script>
-	 $(function() {
-		 var projectName = $("#prjNameTxtId"),
-		 	modelYear = $("#mdlYrTxtId"), 
-		 	dmn = $("#dmnTxtId"), 
-		 	scrnNme = $("#scrnNmeTxtId"),
-		 	allFields = $([]).add(projectName).add(modelYear).add(dmn).add(scrnNme),
-		 	tips = $(".validateTips");
-		 
-		function updateTips( t ) {
-			 tips.text(t).addClass( "ui-state-highlight" );
-			 setTimeout(function() {
-			 	tips.removeClass( "ui-state-highlight", 1500 );
-			 }, 500 );
-		}
-		
-		function checkLength( o, n, min, max ) {
-			if ( o.val().length > max || o.val().length < min ) {
-				o.addClass( "ui-state-error" );
-				if (n == 'Model Year') {
-					updateTips( "Length of " + n + " must be four characters wide." );
-				}
-				else
-					updateTips( "Length of " + n + " must be between " + min + " and " + max + " characters." );
-			 	return false;
-			 } else {
-				return true;
-			 }
-		}
-		
-		function checkRegex(o) {
-			var regex = /[M][Y][0-9][0-9]/;
-			var pass = regex.test(o.val());
-			if (!pass) {
-				o.addClass( "ui-state-error" );
-				updateTips("Model Year should be of the following format - MY+YY, where YY is the last two digits of the year. Examples MY14, MY15 etc.");
-				return false;
-			} else {
-				return true;
-			}
-		}
-		 
-		 $( "#dialog-capture-file-details" ).dialog({
-			 modal: true,
-			 height: '420',
-			 width: '400',
-			 title: 'Input File Details',
-			 closeOnEscape: false,
-			 dialogClass: 'cptrFlDtls',
-			 buttons: {
-				 "Add screen details": function() {
-					 var validationsCmplte = true;
-					 allFields.removeClass("ui-state-error");
-					 
-					 validationsCmplte = validationsCmplte && checkLength(projectName, "Project Name", 2, 100 );
-					 validationsCmplte = validationsCmplte && checkLength(modelYear, "Model Year", 4, 4);
-					 validationsCmplte = validationsCmplte && checkLength(dmn, "Domain", 2, 100);
-					 validationsCmplte = validationsCmplte && checkLength(scrnNme, "Screen Name", 2, 100);
-					 
-					 validationsCmplte = validationsCmplte && checkRegex(modelYear);
-					 
-					 if (validationsCmplte) {
-						 $(this).dialog("close");
-					 }
-				 }
-			 }
-		 });
-	});
-	</script>
 </body>
 </html>

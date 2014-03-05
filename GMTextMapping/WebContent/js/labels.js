@@ -13,6 +13,8 @@ $(document).ready(function() {
 	var lblsLength = '';
 	var lbldata = '';
 	var fileName = '';
+	var domain = '';
+	var modelYear = '';
 	var screenName = '';
 	var projectName = '';
 	$('.labelstab').empty();
@@ -64,49 +66,6 @@ $(document).ready(function() {
 	$(".labelstab").append(textMapping);
 
 	/**
-	 * This will display the values in dynamic variables tab
-	 */
-
-	var l = 1;
-	var k = 0;
-	var dynamicVariables = "<table class=mapper>";
-	dynamicVariables = dynamicVariables+"<tr class=header class=odd>";
-	dynamicVariables = dynamicVariables+"<th style='border-right: thin solid #A0A0A0;'>Layer Name</th>";
-	dynamicVariables = dynamicVariables+"<th>Mapped</th>";
-	dynamicVariables = dynamicVariables+"</tr>";
-	$.each(dataFromFile.Screen.LabelWidget, function(key, values) {
-
-		var trclass;
-		if(l%2==0)
-			trclass = "odd dynamicmappertrClick";
-		else
-			trclass = "even dynamicmappertrClick";
-		if (dataFromFile.Screen.LabelWidget[k].ID.indexOf('$') != -1) {
-			dynamicVariables = dynamicVariables+'<tr class="'+trclass+'">';
-			dynamicVariables = dynamicVariables+"<td class=dynamiclayerName>"+dataFromFile.Screen.LabelWidget[k].Value.Text+"</td>";
-			dynamicVariables = dynamicVariables+"<td class=dynamicimageMapped></td>";
-			dynamicVariables = dynamicVariables+"</tr>";
-		}
-		l++;k++;
-	});
-	dynamicVariables = dynamicVariables+"</table>";
-	$(".dynamictab").append(dynamicVariables);
-
-
-	/**
-	 * This click is for displaying the variables div on click of dynamic variables tab
-	 */
-
-	$('#dynamic').click(function(){
-		$('.wrdSearch').val('');
-		$('.engMasterheader').css('display','none');
-		$('.variableMasterHeader').css('display','block');
-		$('.dynamicbutton').css('display','block');
-		$('.labelsbutton').css('display','none');
-		$('.englishMaster').empty();
-	});
-
-	/**
 	 * This click is for displaying the English master div on click of labels tab
 	 */
 
@@ -119,30 +78,6 @@ $(document).ready(function() {
 	});
 
 	/*The above two click functions will hide or show the div based on the tab selected*/
-	
-	var dynamicLayerName = '';
-	$('#dynamicMapButton').click(function(){
-		dynamicLayerName = $('.dynamichighlight').find('.dynamiclayerName').text();
-		if(dynamicLayerName == ''){
-			alert('Please select a Layer Name from Dynamic Variables and continue with mapping');
-		}else{
-			alert(dynamicLayerName);
-		}
-	});
-
-	/**
-	 *  This will highlight the row selected in the dynamic variables tab, 
-	 *  the selected value will get populated in search term in the variables tab
-	 */
-
-	$('.dynamicmappertrClick').click(function(){
-		$('.dynamichighlight').removeClass('dynamichighlight');
-		$(this).addClass('dynamichighlight');
-		var valueSelected = $(this).find(".dynamiclayerName").text();
-		$('.dynamicWrdSearch').val(valueSelected);
-		$('.englishMaster').empty();
-	});
-
 
 
 	$('.mappertrClick').click(function(){
@@ -177,7 +112,7 @@ $(document).ready(function() {
 		}
 	});
 
-	var textString = '';
+//	var textString = '';
 	var content = '';
 	function valueOf(newTerm){
 		$(function() {
@@ -296,35 +231,124 @@ $(document).ready(function() {
 		var success = false;
 		$.post("/GMTextMapping/rest/mappingservice/mappeddata?mappedData="+mappedData+"&fileName="+fileName+"&screenName="
 				+screenName+"&projectName="+projectName)
-		.done(function(data) {
-			$.each(data.insert, function(key, values) {
-				if(values.inserted == true){
-					$('.addedScreenLayers').empty();
-					/*$('.addedScreenLayers').append("<h3 style='color: green; font-size: large;'>Screen Layers Details Added</h3>");*/
-					success = true;		/* when values inserted */
-				}else{
-					$('.addedScreenLayers').empty();
-					/*$('.addedScreenLayers').append("<h3 style='color: red; font-size: large;'>Error while Adding Screen Layer Details</h3>");*/
-					success = false;	/* when values not inserted */
-				}
-			});
-		});
+				.done(function(data) {
+					$.each(data.insert, function(key, values) {
+						if(values.inserted == true){
+							$('.addedScreenLayers').empty();
+							/*$('.addedScreenLayers').append("<h3 style='color: green; font-size: large;'>Screen Layers Details Added</h3>");*/
+							success = true;		/* when values inserted */
+						}else{
+							$('.addedScreenLayers').empty();
+							/*$('.addedScreenLayers').append("<h3 style='color: red; font-size: large;'>Error while Adding Screen Layer Details</h3>");*/
+							success = false;	/* when values not inserted */
+						}
+					});
+				});
 		//	jsonObj = [];	/* this is a fail safe; not sure of this is happening in below event */
 		return success;
 	}
 
+
+	/**
+	 * Dialog form for getting the file details 
+	 */
+
+	$(function() {
+		var prjName = $("#prjNameTxtId"),
+		mYear = $("#mdlYrTxtId"), 
+		dmn = $("#dmnTxtId"), 
+		scrnName = $("#scrnNmeTxtId"),
+		allFields = $([]).add(prjName).add(mYear).add(dmn).add(scrnName),
+		tips = $(".validateTips");
+
+		function updateTips( t ) {
+			tips.text(t).addClass( "ui-state-highlight" );
+			setTimeout(function() {
+				tips.removeClass( "ui-state-highlight", 1500 );
+			}, 500 );
+		}
+
+
+		function checkLength( o, n, min, max ) {
+			if ( o.val().length > max || o.val().length < min ) {
+				o.addClass( "ui-state-error" );
+				if (n == 'Model Year') {
+					updateTips( "Length of " + n + " must be four characters wide." );
+				}
+				else
+					updateTips( "Length of " + n + " must be between " + min + " and " + max + " characters." );
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		function checkRegex(o) {
+			var regex = /[M][Y][0-9][0-9]/;
+			var pass = regex.test(o.val());
+			if (!pass) {
+				o.addClass( "ui-state-error" );
+				updateTips("Model Year should be of the following format - MY+YY, where YY is the last two digits of the year. Examples MY14, MY15 etc.");
+				return false;
+			} else {
+				return true;
+			}
+		}
+
+		$( "#dialog-capture-file-details" ).dialog({
+			modal: true,
+			height: '420',
+			width: '400',
+			title: 'Input File Details',
+			closeOnEscape: false,
+			dialogClass: 'cptrFlDtls',
+			buttons: {
+				"Add screen details": function() {
+					
+					
+					projectName = prjName;
+					modelYear = mYear;
+					domain = dmn;
+					screenName = scrnName;
+					testing();
+					var validationsCmplte = true;
+					allFields.removeClass("ui-state-error");
+
+					validationsCmplte = validationsCmplte && checkLength(prjName, "Project Name", 2, 100 );
+					validationsCmplte = validationsCmplte && checkLength(mYear, "Model Year", 4, 4);
+					validationsCmplte = validationsCmplte && checkLength(dmn, "Domain", 2, 100);
+					validationsCmplte = validationsCmplte && checkLength(scrnName, "Screen Name", 2, 100);
+
+					validationsCmplte = validationsCmplte && checkRegex(modelYear);
+
+					if (validationsCmplte) {
+						$(this).dialog("close");
+					}
+				}
+			}
+		});
+	});
+
+	/**
+	 * Ending of dialog form
+	 */
+	
+	function testing(){
+		console.log(fileName +" : "+ screenName.val() +" : "+ projectName.val() + " : " + modelYear.val() + " : " + domain.val());
+	}
+	
 	fileName = $('.fileName').text();
-	screenName = $('.screenName').text();
-	projectName = $('.projectName').text();
+	//screenName = $('.screenName').text();
+	//projectName = $('.projectName').text();
 
 	/* 
 	 * saves the mapping and lets the user download a JSON file 
 	 */
 	$('#saveMapping').click(function(){
 		jsonString = JSON.stringify(lbldata);
-		var screendetails = addScreenDetails(fileName, screenName, projectName);
+		var screendetails = addScreenDetails(fileName, screenName.val(), projectName.val(), modelYear.val(), domain.val());
 		console.log('screendetails - ' + screendetails);
-		var screenLayers = addScreenLayers(fileName, screenName, projectName, jsonObj);
+		var screenLayers = addScreenLayers(fileName, screenName.val(), projectName.val(), jsonObj);
 		console.log('screenLayers - ' + screenLayers);
 		//if(screenDetails == true && screenLayers == true){ 	/* something seems fishy here */
 		if(true == true && true == true){						/* enabling download of file for now */
@@ -349,21 +373,21 @@ $(document).ready(function() {
 	var fontSize = '';
 	var fontStyle = '';
 	var textString = '';
-	
+
 	$('#mapTermButton').click(function(e){
 		/* save the screen details in the DB */
 		/*addScreenDetails(fileName, screenName, projectName);*/
-		
+
 		/* get values from Photoshop Screen section*/
 		layerName = $('.highlight').find('.layerName').text();
 		fieldWidth = $('.highlight').find('.fieldMWidth').text();
 		fontFamily = $('.highlight').find('.fontname').text();
 		fontSize = $('.highlight').find('.fontsize').text();
 		fontStyle = $('.highlight').find('.fonttype').text();
-		
+
 		/* get the text from English Master section */
 		textString = $('.highlightdiv').find('.textString').text();
-		
+
 		/* Checking the layer name is seleted or not */
 		if(layerName == ''){
 			alert('Please select a layer Name from Photoshop screen and continue mapping activity.');
@@ -382,7 +406,7 @@ $(document).ready(function() {
 					});
 					if (layerName != textString) {	/* check if values in PS and EM are not same */
 						var proceed = confirm("The selected Layer Name and Text String do not match (case sensitive also), " +
-								"do you want to map this term?");
+						"do you want to map this term?");
 						if (proceed) {
 							$.each(lbldata.Screen.LabelWidget, function(key, values) {
 								if (lbldata.Screen.LabelWidget[i].Value.Text == layerName) {
@@ -400,7 +424,7 @@ $(document).ready(function() {
 									$('.highlight').find('.trnsMWidth').css('color','red');
 									$('.highlight').find('.trnsMWidth').css('font-weight','bold');
 									alert('This field width cannot accomodate the translation max width, you might have to change'+ 
-											'the field width or font size. Choose wisely!');
+									'the field width or font size. Choose wisely!');
 									$('#saveMapping').removeAttr('disabled');
 								}else{
 									$(".labelstab  .highlight").find(".imageMapped").html('<img src="images/tick.png" />');
@@ -440,7 +464,7 @@ $(document).ready(function() {
 
 						}
 					}
-					
+
 					item = {};
 					item['layerName'] = layerName;
 					item['fieldWidth'] = fieldWidth;
@@ -459,7 +483,7 @@ $(document).ready(function() {
 		count++;
 		$('.savemappedData').empty();
 	});
-	
+
 	function searchTerm(){
 		$(".englishMaster").empty();
 		var wrdSearch = $('.wrdSearch').val();

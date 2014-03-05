@@ -244,12 +244,10 @@ public class MappingDAO {
 		return sdf.format(date);
 	}
 
-	public static boolean insertScreenDetails(String file_name, String screen_name, String project_name){
+	public static boolean insertScreenDetails(String file_name, String screen_name, String project_name, String model_year, String domain){
 		System.out.println("pkvn - " + file_name + screen_name + project_name);
 		int screenId = getScreenDataFrmTable(file_name, screen_name, project_name);
 		System.out.println("insertScreenDetails::screenId - " + screenId);
-		String model_year = "MY17";
-		String domain = "Audio";
 		boolean insert = false;
 		if(screenId==0){
 			try{
