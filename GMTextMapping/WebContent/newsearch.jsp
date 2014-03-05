@@ -179,14 +179,14 @@
 		<p class="validateTips">Please enter the details below. All fields are required.</p>
 		<form>
 			<fieldset class="fieldset">
-				<label for="prjNme">Poject Name: </label>
-				<input id="prjNameTxtId" type="text" name="prjNme" class="text" value="cadillac"/>
+				<label for="prjNme">Project Name: </label>
+				<input id="prjNameTxtId" type="text" name="prjNme" class="text" value=""/>
 				<label for="mdlYr">Model Year: </label>
-				<input id="mdlYrTxtId" type="text" name="mdlYr" class="text" value="MY1"/>
+				<input id="mdlYrTxtId" type="text" name="mdlYr" class="text" value=""/>
 				<label for="dmn">Domain: </label>
-				<input id="dmnTxtId" type="text" name="dmn" class="text" value="Audio"/>
+				<input id="dmnTxtId" type="text" name="dmn" class="text" value=""/>
 				<label for="scrnNme">Screen Name: </label>
-				<input id="scrnNmeTxtId" type="text" name="scrnNme" class="text" value="AM Playing"/>
+				<input id="scrnNmeTxtId" type="text" name="scrnNme" class="text" value=""/>
 			</fieldset>
 		</form>
 	</div>

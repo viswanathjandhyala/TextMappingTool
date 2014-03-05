@@ -3,6 +3,7 @@ package com.gm.tmt.controller;
 import java.util.List;
 
 import com.gm.tmt.bean.MappingBean;
+import com.gm.tmt.bean.ScreenLayerBean;
 import com.gm.tmt.dao.MappingDAO;
 
 public class MappingController {
@@ -34,5 +35,13 @@ public class MappingController {
 	
 	public static boolean insertScreenDetails(String fileName, String screenName, String projectName, String modelYear, String domain){
 		return MappingDAO.insertScreenDetails(fileName, screenName, projectName, modelYear, domain);
+	}
+
+	public static List<String> getScreenNames() {
+		return MappingDAO.getScreenNames();
+	}
+
+	public static List<ScreenLayerBean> getScreenLayersDetails(String screenName) {
+		return MappingDAO.getScreenLayersDetails(screenName);
 	}
 }

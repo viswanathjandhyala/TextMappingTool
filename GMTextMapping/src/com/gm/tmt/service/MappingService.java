@@ -8,16 +8,20 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.gm.tmt.bean.MappingBean;
+import com.gm.tmt.bean.ScreenLayerBean;
 import com.gm.tmt.controller.MappingController;
 
 @Path("/mappingservice")
 public class MappingService {
 
 	static List<MappingBean> mappingBeanList = null;
+	static List<String> screenNames = null;
+	static List<ScreenLayerBean> screenLayers = null;
 
 	@SuppressWarnings("unchecked")
 	@GET
@@ -177,5 +181,63 @@ public class MappingService {
 		mappInsertArray.add(mappInsert);
 		mappInsertData.put("insert", mappInsertArray);
 		return mappInsertData.toJSONString();
+	}
+	
+	/**
+	 * This method will get the screen names from screen table
+	 * @return
+	 */
+	
+	@SuppressWarnings("unchecked")
+	@GET
+	@Path("/screenName/")
+	@Produces("application/json")
+	public String getScreeNames(){
+		screenNames = MappingController.getScreenNames();
+		JSONObject screenName = new JSONObject();
+		JSONObject screenNameData = new JSONObject();
+		JSONArray screenNameArray = new JSONArray();
+		for(int i=0;i<screenNames.size();i++){
+			screenNameData = new JSONObject();
+			screenNameData.put("screenName", screenNames.get(i));
+			screenNameArray.add(screenNameData);
+		}
+		screenName.put("Screen_Names", screenNameArray);
+		return screenName.toJSONString();
+	}
+	
+	/**
+	 * This method will get the screen layer details based on screen Name selected
+	 * @param screenName
+	 * @return
+	 */
+	
+	@SuppressWarnings("unchecked")
+	@GET
+	@Path("/screenLayers/{screenName}")
+	@Produces("application/json")
+	public String getScreeLayerdetails(@PathParam("screenName") String screenName){
+		
+		System.out.println(screenName);
+		screenLayers = MappingController.getScreenLayersDetails(screenName);
+		JSONObject screenLayer = new JSONObject();
+		JSONObject screenLayerData = new JSONObject();
+		JSONArray screenLayerArray = new JSONArray();
+		for(int i=0;i<screenLayers.size();i++){
+			screenLayerData = new JSONObject();
+			screenLayerData.put("screenId", screenLayers.get(i).getScreenId());
+			screenLayerData.put("fileName", screenLayers.get(i).getFile_name());
+			screenLayerData.put("screenName", screenLayers.get(i).getScreen_name());
+			screenLayerData.put("projectName", screenLayers.get(i).getProject_name());
+			screenLayerData.put("layerName", screenLayers.get(i).getLayer_name());
+			screenLayerData.put("fieldWidth", screenLayers.get(i).getField_width());
+			screenLayerData.put("fontFamily", screenLayers.get(i).getFont_family());
+			screenLayerData.put("fontSize", screenLayers.get(i).getFont_size());
+			screenLayerData.put("fontStyle", screenLayers.get(i).getFont_style());
+			screenLayerData.put("lblShortKey", screenLayers.get(i).getLblShortKey());
+			screenLayerArray.add(screenLayerData);
+		}
+		screenLayer.put("aaData", screenLayerArray);
+		return screenLayer.toJSONString();
 	}
 }

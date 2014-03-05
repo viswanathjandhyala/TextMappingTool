@@ -8,6 +8,15 @@
 <script src="js/jquery-1.9.1.js"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Upload a JSON</title>
+<script>
+function validateChooseFile(){
+	var fileID = document.getElementById('file').value;
+	if(fileID == ''){
+		alert('Please choose a file to upload');
+		return false;
+	}
+}
+</script>
 </head>
 <body>
 	<h3 align="center">GM Text Mapping Tool</h3>
@@ -17,8 +26,8 @@
 		<br />
 		<div class="ui-state-highlight ui-corner-all">
 			<form action="uploadfile.jsp" method="post"
-				enctype="multipart/form-data">
-				<input type="file" name="file" size="50" /> <br /> <input
+				enctype="multipart/form-data" onsubmit="return validateChooseFile()">
+				<input type="file" id="file" name="file" size="50" /> <br /> <input
 					type="submit" value="Upload" />
 			</form>
 		</div>

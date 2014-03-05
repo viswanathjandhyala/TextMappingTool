@@ -21,6 +21,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.gm.tmt.bean.MappingBean;
+import com.gm.tmt.bean.ScreenLayerBean;
 
 public class MappingDAO {
 
@@ -32,6 +33,8 @@ public class MappingDAO {
 	static ResultSet rs = null;
 	static List<MappingBean> mappingBeanList = null;
 	static Map<String, MappingBean> mapBean = null;
+	static List<String> screenNames = null;
+	static List<ScreenLayerBean> screenLayers = null;
 	static int master_id;
 	static int shortkey;
 
@@ -253,10 +256,10 @@ public class MappingDAO {
 			try{
 				System.out.println("Inside try...");
 				conn = getConnection();
-				pst = conn.prepareStatement("insert into generalmotors.screen(project_name, screen_name, file_name, model_year, domain, creation_timeStamp,"
+				pst = conn.prepareStatement("insert into generalmotors.screen(file_name, screen_name, project_name, model_year, domain, creation_timeStamp,"
 						+ "created_by, last_edited_timestamp, last_edit_by) values(?,?,?,?,?,?,?,?,?)");
-				pst.setString(1, screen_name);	 /*screen name*/ 	
-				pst.setString(2, file_name);	 /*file name*/ 	
+				pst.setString(1, file_name);	 /*screen name*/ 	
+				pst.setString(2, screen_name);	 /*file name*/ 	
 				pst.setString(3, project_name);	 /*project name*/ 
 				pst.setString(4, model_year);	 /*model year*/ 	
 				pst.setString(5, domain);		 /*domain*/ 		
@@ -367,33 +370,38 @@ public class MappingDAO {
 			String[] file_name,
 			String[] screen_name, 
 			String[] project_name) {
-		String checkQuery = "select * from generalmotors.screen_layers where screenId = '"+screenId+"'";
-		String delstmt = "delete from generalmotors.screen_layers where screenId = '"+screenId+"'";
+	//	String checkQuery = "select * from generalmotors.screen_layers where screenId = '"+screenId+"'";
+	//	String delstmt = "delete from generalmotors.screen_layers where screenId = '"+screenId+"'";
+		boolean chkStatus = checkScreenId(screenId);
 		boolean delSuccess = false;
 		try{
-			conn = getConnection();
-
-			System.out.println(checkQuery);
-			System.out.println(delstmt);
+			if(chkStatus){
+				delSuccess = deleteScreenIdDetails(screenId);
+			}
+			else
+				delSuccess = true;
+			//System.out.println(checkQuery);
+			//System.out.println(delstmt);
 
 			/* check if screen already exists */
-			pst = conn.prepareStatement(checkQuery);
+		//	pst = conn.prepareStatement(checkQuery);
 
-			ResultSet rSet = pst.executeQuery();
-			System.out.println("Screen already present in screen_layers: " + rSet.next());
+			//ResultSet rSet = pst.executeQuery();
+			//System.out.println("Screen already present in screen_layers: " + rSet.next());
 
-			if (rSet.next()) {
-				/* delete all screen layer entries for a screenId from the table if a screen already exists */
+			/*if (rSet.next()) {
+				 delete all screen layer entries for a screenId from the table if a screen already exists 
 				pst = conn.prepareStatement(delstmt);
 				delSuccess = pst.execute();
 				System.out.println(delSuccess);
 			}
 			else 
 				delSuccess = true;
-
+*/			
 			/* after successful deletion insert the fresh values */
 			if (delSuccess) {
 				System.out.println("in if");
+				conn = getConnection();
 				pst = conn.prepareStatement("insert into screen_layers(screenId, file_name, screen_name, project_name, layer_name,"
 						+ "field_width, font_family, font_size, font_style, lblshortkey) values(?,?,?,?,?,?,?,?,?,?)");
 				for(int i=0;i<lname.length;i++){
@@ -417,6 +425,52 @@ public class MappingDAO {
 			closeConnection();
 		}
 		return true;
+	}
+	
+	/**
+	 * To Check if Screen layers details exists for the particualr screen id
+	 * @param screenid
+	 * @return boolean
+	 */
+	public static boolean checkScreenId(int screenid){
+
+		boolean chkStatus = false;
+		try{
+			conn = getConnection();
+			pst = conn.prepareStatement("select screenId from generalmotors.screen_layers where screenId = '"+screenid+"'");
+			rs = pst.executeQuery();
+			if(rs.next()){
+				chkStatus = true;
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			closeConnection();
+		}
+		return chkStatus;
+	}
+	
+	/**
+	 * Delete the details if screen id present on screen layers
+	 * @param screenid
+	 * @return boolean
+	 */
+	public static boolean deleteScreenIdDetails(int screenid){
+
+		boolean delStatus = false;
+		try{
+			conn = getConnection();
+			pst = conn.prepareStatement("delete from generalmotors.screen_layers where screenId = '"+screenid+"'");
+			int i = pst.executeUpdate();
+			if(i==1){
+				delStatus = true;
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			closeConnection();
+		}
+		return delStatus;
 	}
 
 	/**
@@ -448,6 +502,53 @@ public class MappingDAO {
 		}
 		System.out.println("getScreenDataFrmTable - done");
 		return screen_id;
+	}
+	
+	public static List<String> getScreenNames(){
+
+		screenNames = new ArrayList<String>();
+		try{
+			conn = getConnection();
+			pst = conn.prepareStatement("select screen_name from screen group by screen_name");
+			rs = pst.executeQuery();
+			while(rs.next()){
+				screenNames.add(rs.getString("screen_name"));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			closeConnection();
+		}
+		return screenNames;
+	}
+	
+	public static List<ScreenLayerBean> getScreenLayersDetails(String screenName){
+		
+		screenLayers = new ArrayList<ScreenLayerBean>();
+		try{
+			conn = getConnection();
+			pst = conn.prepareStatement("select * from screen_layers where screen_name='"+screenName+"'");
+			rs = pst.executeQuery();
+			
+			while(rs.next()){
+				System.out.println(rs.getString("file_name"));
+				screenLayers.add(new ScreenLayerBean(rs.getInt("screenId"), 
+													 rs.getString("file_name"), 
+													 rs.getString("screen_name"),
+													 rs.getString("project_name"), 
+													 rs.getString("layer_name"), 
+													 rs.getString("field_width"), 
+													 rs.getString("font_family"), 
+													 rs.getString("font_size"), 
+													 rs.getString("font_style"), 
+													 rs.getString("lblShortKey")));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			closeConnection();
+		}
+		return screenLayers;
 	}
 
 	public static void main(String args[]) {

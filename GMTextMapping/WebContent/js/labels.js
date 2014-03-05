@@ -112,6 +112,11 @@ $(document).ready(function() {
 		}
 	});
 
+	/**
+	 * This is the service call for getting the screen Names and displaying in drop down menu
+	 */
+	
+	
 //	var textString = '';
 	var content = '';
 	function valueOf(newTerm){
@@ -199,56 +204,6 @@ $(document).ready(function() {
 		}
 	});
 
-	function saveMappedData(stringJSON){
-		window.open('./MappingServlet?jsonString='+stringJSON);
-	}
-
-	/*
-	 * This is the function which is used to save screen details.
-	 */
-	function addScreenDetails(fileName, screenName, projectName){
-		var success = false;
-		$.post("/GMTextMapping/rest/mappingservice/addscreen/"+fileName+","+screenName+","+projectName)
-		.done(function(data) {
-			$.each(data.inserted, function(key, values) {
-				if(values.addedfile == true){
-					alert('file added');
-					$('.addedScreenDetails').empty();
-					/*$('.addedScreenDetails').append("<h3 style='color: green; font-size: large;'>"+fileName+" Details Added</h3>");*/
-					sucess = true;
-				}
-			});
-		});
-		return success;
-	}
-
-	/*
-	 * This is the function which is used to save the screen layer details which are mapped.
-	 */
-	var mappedData = '';
-	function addScreenLayers(fileName, screenName, projectName, jsonObj){
-		mappedData = JSON.stringify(jsonObj);
-		var success = false;
-		$.post("/GMTextMapping/rest/mappingservice/mappeddata?mappedData="+mappedData+"&fileName="+fileName+"&screenName="
-				+screenName+"&projectName="+projectName)
-				.done(function(data) {
-					$.each(data.insert, function(key, values) {
-						if(values.inserted == true){
-							$('.addedScreenLayers').empty();
-							/*$('.addedScreenLayers').append("<h3 style='color: green; font-size: large;'>Screen Layers Details Added</h3>");*/
-							success = true;		/* when values inserted */
-						}else{
-							$('.addedScreenLayers').empty();
-							/*$('.addedScreenLayers').append("<h3 style='color: red; font-size: large;'>Error while Adding Screen Layer Details</h3>");*/
-							success = false;	/* when values not inserted */
-						}
-					});
-				});
-		//	jsonObj = [];	/* this is a fail safe; not sure of this is happening in below event */
-		return success;
-	}
-
-
 	/**
 	 * Dialog form for getting the file details 
 	 */
@@ -304,13 +259,13 @@ $(document).ready(function() {
 			dialogClass: 'cptrFlDtls',
 			buttons: {
 				"Add screen details": function() {
-					
-					
+
+
 					projectName = prjName;
 					modelYear = mYear;
 					domain = dmn;
 					screenName = scrnName;
-					testing();
+
 					var validationsCmplte = true;
 					allFields.removeClass("ui-state-error");
 
@@ -332,14 +287,58 @@ $(document).ready(function() {
 	/**
 	 * Ending of dialog form
 	 */
-	
-	function testing(){
-		console.log(fileName +" : "+ screenName.val() +" : "+ projectName.val() + " : " + modelYear.val() + " : " + domain.val());
+
+	function saveMappedData(stringJSON){
+		window.open('./MappingServlet?jsonString='+stringJSON);
 	}
-	
+
+	/*
+	 * This is the function which is used to save screen details.
+	 */
+	function addScreenDetails(fileName, screenName, projectName, modelYear, domain){
+		var success = false;
+		$.post("/GMTextMapping/rest/mappingservice/addscreen/"+fileName+","+screenName+","+projectName+","+modelYear+","+domain)
+		.done(function(data) {
+			$.each(data.inserted, function(key, values) {
+				if(values.addedfile == true){
+					alert('file added');
+					$('.addedScreenDetails').empty();
+					/*$('.addedScreenDetails').append("<h3 style='color: green; font-size: large;'>"+fileName+" Details Added</h3>");*/
+					sucess = true;
+				}
+			});
+		});
+		return success;
+	}
+
+	/*
+	 * This is the function which is used to save the screen layer details which are mapped.
+	 */
+	var mappedData = '';
+	function addScreenLayers(fileName, screenName, projectName, jsonObj){
+		console.log(jsonObj);
+		mappedData = JSON.stringify(jsonObj);
+		var success = false;
+		$.post("/GMTextMapping/rest/mappingservice/mappeddata?mappedData="+mappedData+"&fileName="+fileName+"&screenName="
+				+screenName+"&projectName="+projectName)
+				.done(function(data) {
+					$.each(data.insert, function(key, values) {
+						if(values.inserted == true){
+							$('.addedScreenLayers').empty();
+							/*$('.addedScreenLayers').append("<h3 style='color: green; font-size: large;'>Screen Layers Details Added</h3>");*/
+							success = true;		/* when values inserted */
+						}else{
+							$('.addedScreenLayers').empty();
+							/*$('.addedScreenLayers').append("<h3 style='color: red; font-size: large;'>Error while Adding Screen Layer Details</h3>");*/
+							success = false;	/* when values not inserted */
+						}
+					});
+				});
+		//	jsonObj = [];	/* this is a fail safe; not sure of this is happening in below event */
+		return success;
+	}
+
 	fileName = $('.fileName').text();
-	//screenName = $('.screenName').text();
-	//projectName = $('.projectName').text();
 
 	/* 
 	 * saves the mapping and lets the user download a JSON file 
@@ -381,7 +380,7 @@ $(document).ready(function() {
 		/* get values from Photoshop Screen section*/
 		layerName = $('.highlight').find('.layerName').text();
 		fieldWidth = $('.highlight').find('.fieldMWidth').text();
-		fontFamily = $('.highlight').find('.fontname').text();
+		fontFamily = $('.highlight').find('.fontname').val();
 		fontSize = $('.highlight').find('.fontsize').text();
 		fontStyle = $('.highlight').find('.fonttype').text();
 
@@ -473,8 +472,8 @@ $(document).ready(function() {
 					item['fontStyle'] = fontStyle;
 					item['shortkey'] = shortkey;
 					item['fileName'] = fileName;
-					item['screenName'] = screenName;
-					item['projectName'] = projectName;
+					item['screenName'] = screenName.val();
+					item['projectName'] = projectName.val();
 					jsonObj.push(item);
 				});
 			}

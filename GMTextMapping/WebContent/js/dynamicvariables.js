@@ -1,5 +1,6 @@
 $(document).ready(function() {
-
+	
+	var jsonData = $('.textareajson').val();
 	dataFromFile = JSON.parse(jsonData);
 	$('#newRequestDynVar').attr('disabled','disabled');
 	
