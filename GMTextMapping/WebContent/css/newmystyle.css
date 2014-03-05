@@ -182,3 +182,19 @@ td {
 .header>th {
 	text-align: left;
 }
+
+.flDtlsCls {
+	font-size: 0.8em !important;
+}
+
+.ui-dialog-title {
+	font-size: 0.8em !important;
+}
+
+.cptrFlDtls .ui-dialog-titlebar-close {
+	display: none;
+}
+
+.cptrFlDtls .ui-button {
+	font-size: 0.8em !important;
+}

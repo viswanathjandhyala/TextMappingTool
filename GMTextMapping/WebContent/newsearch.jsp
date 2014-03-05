@@ -10,12 +10,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="css/newmystyle.css">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Text Mapping</title>
-<script src="js/jquery-1.9.1.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/newmystyle.css">
 <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+
+<script src="js/jquery-1.9.1.js"></script>
 <script src="js/jquery-ui.js"></script>
 <script type="text/javascript" src="js/mapping.js"></script>
 </head>
@@ -25,16 +27,44 @@
 	<div class="uploadJSON" style="display: none;">
 		<textarea class="textareajson" rows="" cols=""><%=json%></textarea>
 	</div>
+	<!-- capture details -->
+	<!-- <div id="cptrFileDtls" style="width: 50%; margin-left: auto; margin-right: auto; padding: 10px;">
+		<div style="float: left;">
+			<div>
+				<label style="float: left;">Project Name:</label> 
+				<input type="text" id="txtPrjNmId" style="float: right;"/>
+			</div>
+		</div>
+		<div style="float: right;">
+			<div>
+				<label style="float: left;">Model Year:</label>
+				<input type="text" id="txtMdlYrId" style="float: left;"/>
+			</div>
+		</div>
+		<div style="float: left;">
+			<div>
+				<label style="float: left;">Domain:</label> 
+				<input type="text" id="txtDmNmId" style="float: right;"/>
+			</div>
+		</div>
+		<div style="float: right;">
+			<div>
+				<label style="float: left;">Screen:</label> 
+				<input type="text" id="txtScrNmId" style="float: left;"/>
+			</div>
+		</div>
+	</div> <br/> -->
+	<div>&nbsp;</div>
 	<div class="bg-primary row">
-		<div class="fileName nameBox col-md-4">
+		<div class="nameBox col-md-4">
 			File Name:
-			<%=fileName%></div>
-		<div class="screenName nameBox col-md-4">
+			<span class='fileName'><%=fileName%></span></div>
+		<div class="nameBox col-md-4">
 			Screen Name:
-			<%=fspNames[1]%></div>
-		<div class="projectName nameBox col-md-4">
+			<span class="screenName"><%=fspNames[1]%></span></div>
+		<div class="nameBox col-md-4">
 			Project Name:
-			<%=fspNames[0]%></div>
+			<span class="projectName"><%=fspNames[0]%></span></div>
 	</div>
 	<br />
 	<div class="layerMapheader">
@@ -143,6 +173,90 @@
 			</fieldset>
 		</form>
 	</div>
-	<div id="errorMsgDlgDiv"></div>
+	
+	<div id="dialog-capture-file-details" class="dialogbody flDtlsCls" style="display: none;">
+		<p class="validateTips">Please enter the details below. All fields are required.</p>
+		<form>
+			<fieldset class="fieldset">
+				<label for="prjNme">Poject Name: </label>
+				<input id="prjNameTxtId" type="text" name="prjNme" class="text" value="cadillac"/>
+				<label for="mdlYr">Model Year: </label>
+				<input id="mdlYrTxtId" type="text" name="mdlYr" class="text" value="MY1"/>
+				<label for="dmn">Domain: </label>
+				<input id="dmnTxtId" type="text" name="dmn" class="text" value="Audio"/>
+				<label for="scrnNme">Screen Name: </label>
+				<input id="scrnNmeTxtId" type="text" name="scrnNme" class="text" value="AM Playing"/>
+			</fieldset>
+		</form>
+	</div>
+	<script>
+	 $(function() {
+		 var projectName = $("#prjNameTxtId"),
+		 	modelYear = $("#mdlYrTxtId"), 
+		 	dmn = $("#dmnTxtId"), 
+		 	scrnNme = $("#scrnNmeTxtId"),
+		 	allFields = $([]).add(projectName).add(modelYear).add(dmn).add(scrnNme),
+		 	tips = $(".validateTips");
+		 
+		function updateTips( t ) {
+			 tips.text(t).addClass( "ui-state-highlight" );
+			 setTimeout(function() {
+			 	tips.removeClass( "ui-state-highlight", 1500 );
+			 }, 500 );
+		}
+		
+		function checkLength( o, n, min, max ) {
+			if ( o.val().length > max || o.val().length < min ) {
+				o.addClass( "ui-state-error" );
+				if (n == 'Model Year') {
+					updateTips( "Length of " + n + " must be four characters wide." );
+				}
+				else
+					updateTips( "Length of " + n + " must be between " + min + " and " + max + " characters." );
+			 	return false;
+			 } else {
+				return true;
+			 }
+		}
+		
+		function checkRegex(o) {
+			var regex = /[M][Y][0-9][0-9]/;
+			var pass = regex.test(o.val());
+			if (!pass) {
+				o.addClass( "ui-state-error" );
+				updateTips("Model Year should be of the following format - MY+YY, where YY is the last two digits of the year. Examples MY14, MY15 etc.");
+				return false;
+			} else {
+				return true;
+			}
+		}
+		 
+		 $( "#dialog-capture-file-details" ).dialog({
+			 modal: true,
+			 height: '420',
+			 width: '400',
+			 title: 'Input File Details',
+			 closeOnEscape: false,
+			 dialogClass: 'cptrFlDtls',
+			 buttons: {
+				 "Add screen details": function() {
+					 var validationsCmplte = true;
+					 allFields.removeClass("ui-state-error");
+					 
+					 validationsCmplte = validationsCmplte && checkLength(projectName, "Project Name", 2, 100 );
+					 validationsCmplte = validationsCmplte && checkLength(modelYear, "Model Year", 4, 4);
+					 validationsCmplte = validationsCmplte && checkLength(dmn, "Domain", 2, 100);
+					 validationsCmplte = validationsCmplte && checkLength(scrnNme, "Screen Name", 2, 100);
+					 
+					 validationsCmplte = validationsCmplte && checkRegex(modelYear);
+					 
+					 if (validationsCmplte) {
+						 $(this).dialog("close");
+					 }
+				 }
+			 }
+		 });
+	});
+	</script>
 </body>
 </html>

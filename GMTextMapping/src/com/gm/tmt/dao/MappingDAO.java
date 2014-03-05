@@ -245,26 +245,34 @@ public class MappingDAO {
 	}
 
 	public static boolean insertScreenDetails(String file_name, String screen_name, String project_name){
-
+		System.out.println("pkvn - " + file_name + screen_name + project_name);
 		int screenId = getScreenDataFrmTable(file_name, screen_name, project_name);
-		System.out.println("screenId - " + screenId);
+		System.out.println("insertScreenDetails::screenId - " + screenId);
+		String model_year = "MY17";
+		String domain = "Audio";
 		boolean insert = false;
 		if(screenId==0){
 			try{
+				System.out.println("Inside try...");
 				conn = getConnection();
-				pst = conn.prepareStatement("insert into screen(file_name, screen_name, project_name, creation_timeStamp,"
-						+ "created_by, last_edited_timestamp, last_edit_by) values(?,?,?,?,?,?,?)");
-				pst.setString(1, file_name);
-				pst.setString(2, screen_name);
-				pst.setString(3, project_name);
-				pst.setString(4, getDate());
-				pst.setString(5, "guest");
-				pst.setString(6, "0000-00-00 00:00:00");
-				pst.setString(7, "");
+				pst = conn.prepareStatement("insert into generalmotors.screen(project_name, screen_name, file_name, model_year, domain, creation_timeStamp,"
+						+ "created_by, last_edited_timestamp, last_edit_by) values(?,?,?,?,?,?,?,?,?)");
+				pst.setString(1, screen_name);	 /*screen name*/ 	
+				pst.setString(2, file_name);	 /*file name*/ 	
+				pst.setString(3, project_name);	 /*project name*/ 
+				pst.setString(4, model_year);	 /*model year*/ 	
+				pst.setString(5, domain);		 /*domain*/ 		
+				pst.setString(6, getDate());
+				pst.setString(7, "guest");
+				pst.setString(8, getDate());
+				pst.setString(9, "");
+				System.out.println("pst toString() - " + pst.toString());
 				int i = pst.executeUpdate();
 				if(i == 1){
 					insert = true;
 				}
+			}catch(SQLException sqlex){
+				sqlex.getMessage();
 			}catch(Exception e){
 				e.printStackTrace();
 			}finally{
@@ -428,7 +436,7 @@ public class MappingDAO {
 		int screen_id = 0;
 		try {
 			conn = getConnection();
-			pst = conn.prepareStatement("select screenId from screen where file_name='"+file_name+"' and "
+			pst = conn.prepareStatement("select screenId from generalmotors.screen where file_name='"+file_name+"' and "
 					+ "screen_name='"+screen_name+"' and project_name='"+project_name+"'");
 			rs = pst.executeQuery();
 			while (rs.next()) {
@@ -440,6 +448,7 @@ public class MappingDAO {
 		} finally {
 			closeConnection();
 		}
+		System.out.println("getScreenDataFrmTable - done");
 		return screen_id;
 	}
 

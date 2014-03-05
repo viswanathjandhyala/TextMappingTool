@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
 	/*
 	 * The value which we are getting after reading the file
 	 * */
@@ -185,8 +184,8 @@ $(document).ready(function() {
 			$('.newTermText').val(newTerm);
 			$( "#dialog-form" ).dialog({
 				autoOpen: false,
-				height: 350,
-				width: 370,
+				height: 400,
+				width: 500,
 				modal: true,
 				buttons: {
 					"Submit": function() {
@@ -272,16 +271,16 @@ $(document).ready(function() {
 	/*
 	 * This is the function which is used to save screen details.
 	 */
-
 	function addScreenDetails(fileName, screenName, projectName){
 		var success = false;
 		$.post("/GMTextMapping/rest/mappingservice/addscreen/"+fileName+","+screenName+","+projectName)
 		.done(function(data) {
 			$.each(data.inserted, function(key, values) {
 				if(values.addedfile == true){
+					alert('file added');
 					$('.addedScreenDetails').empty();
 					/*$('.addedScreenDetails').append("<h3 style='color: green; font-size: large;'>"+fileName+" Details Added</h3>");*/
-					success = true;
+					sucess = true;
 				}
 			});
 		});
@@ -323,8 +322,10 @@ $(document).ready(function() {
 	 */
 	$('#saveMapping').click(function(){
 		jsonString = JSON.stringify(lbldata);
+		var screendetails = addScreenDetails(fileName, screenName, projectName);
+		console.log('screendetails - ' + screendetails);
 		var screenLayers = addScreenLayers(fileName, screenName, projectName, jsonObj);
-		console.log(screenLayers);
+		console.log('screenLayers - ' + screenLayers);
 		//if(screenDetails == true && screenLayers == true){ 	/* something seems fishy here */
 		if(true == true && true == true){						/* enabling download of file for now */
 			if(count == lblsLength){
@@ -351,7 +352,7 @@ $(document).ready(function() {
 	
 	$('#mapTermButton').click(function(e){
 		/* save the screen details in the DB */
-		addScreenDetails(fileName, screenName, projectName);
+		/*addScreenDetails(fileName, screenName, projectName);*/
 		
 		/* get values from Photoshop Screen section*/
 		layerName = $('.highlight').find('.layerName').text();
@@ -412,7 +413,7 @@ $(document).ready(function() {
 						} else {
 							//do nothing
 						}
-					} /*else {
+					} else {
 						$.each(lbldata.Screen.LabelWidget, function(key, values) {
 							if (lbldata.Screen.LabelWidget[i].Value.Text == layerName) {
 								lbldata.Screen.LabelWidget[i].shortkey = shortkey;
@@ -438,7 +439,7 @@ $(document).ready(function() {
 							}
 
 						}
-					}*/
+					}
 					
 					item = {};
 					item['layerName'] = layerName;
@@ -458,7 +459,7 @@ $(document).ready(function() {
 		count++;
 		$('.savemappedData').empty();
 	});
-
+	
 	function searchTerm(){
 		$(".englishMaster").empty();
 		var wrdSearch = $('.wrdSearch').val();
