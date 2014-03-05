@@ -504,6 +504,10 @@ public class MappingDAO {
 		return screen_id;
 	}
 	
+	/**
+	 * This method will return the screen Names from screen table
+	 * @return List<String>
+	 */
 	public static List<String> getScreenNames(){
 
 		screenNames = new ArrayList<String>();
@@ -522,6 +526,11 @@ public class MappingDAO {
 		return screenNames;
 	}
 	
+	/**
+	 * This method will return the layer details based on the screen name
+	 * @param screenName
+	 * @return
+	 */
 	public static List<ScreenLayerBean> getScreenLayersDetails(String screenName){
 		
 		screenLayers = new ArrayList<ScreenLayerBean>();
